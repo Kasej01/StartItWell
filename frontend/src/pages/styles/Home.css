@@ -1,0 +1,84 @@
+.home-container {
+  text-align: center;
+  margin: 50px auto;
+  max-width: 800px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.home-header h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.home-header .highlight {
+  color: #007bff;
+}
+
+.slogan {
+  font-style: italic;
+  font-size: 1.5em;
+  margin: 20px 0;
+  color: #555;
+}
+
+.app-details {
+  margin-top: 30px;
+}
+
+.app-details h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.app-details p {
+  font-size: 1.2em;
+  line-height: 1.6;
+}
+
+.cta-section {
+  margin-top: 40px;
+}
+
+.cta-section h3 {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+}
+
+.cta-section p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-register {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-register:hover {
+  background-color: #218838;
+}
+
+.btn-login {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-login:hover {
+  background-color: #0056b3;
+}
