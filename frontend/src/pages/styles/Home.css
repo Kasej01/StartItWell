@@ -3,7 +3,7 @@
   margin: 50px auto;
   max-width: 800px;
   font-family: 'Arial', sans-serif;
-  color: #333;
+  color: black;
 }
 
 .home-header h1 {
@@ -75,10 +75,10 @@
 }
 
 .btn-login {
-  background-color: #007bff;
+  background-color: #3953e7;;
   color: white;
 }
 
 .btn-login:hover {
-  background-color: #0056b3;
+  background-color: rgb(23, 54, 230);
 }
