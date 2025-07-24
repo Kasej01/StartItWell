@@ -1,6 +1,6 @@
 .home-container {
   text-align: center;
-  width: 95vw;
+  width: 90vw;
   margin-top: 32px;
   margin-bottom: 0;
   margin-left: 0;
@@ -192,6 +192,12 @@
 }
 
 @media (max-width: 500px) {
+
+  .home-container{
+    margin: 0;
+    width: 100vw;
+    padding: 0;
+  }
   .home-header h1 {
     font-size: 1.5em;
   }
