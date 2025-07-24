@@ -21,6 +21,22 @@
   font-size: 16px;
 }
 
+.terms-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.terms-label {
+  margin-left: 8px;
+  font-size: 0.98em;
+}
+
+.terms-label a {
+  color: #3953e7;
+  text-decoration: underline;
+}
+
 .register-form button {
   padding: 10px;
   font-size: 16px;
@@ -28,8 +44,21 @@
   color: white;
   border: none;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.register-form button:hover {
+.register-form button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.register-form button:hover:enabled {
   background-color: #218838;
+}
+
+.register-error {
+  color: #e53935;
+  margin-top: 1em;
+  font-weight: 600;
+  text-align: center;
 }

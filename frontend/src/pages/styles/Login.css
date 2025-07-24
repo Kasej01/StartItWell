@@ -33,3 +33,55 @@
 .login-form button:hover {
   background-color: #0056b3;
 }
+
+.login-error{
+  color: #e53935;
+  margin-top: 1em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-switch {
+  margin-top: 1.5em;
+  font-size: 1em;
+  text-align: center;
+  color: #444;
+}
+
+.login-switch-link {
+  color: #3953e7;
+  text-decoration: underline;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.login-switch-link:hover {
+  color: #2542e6;
+}
+
+.password-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-input-wrapper input[type="password"],
+.password-input-wrapper input[type="text"] {
+  flex: 1;
+  padding-right: 2.2em;
+}
+
+.show-password-icon {
+  position: absolute;
+  right: 10px;
+  top: 7px;
+  cursor: pointer;
+  font-size: 1em;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.show-password-icon:hover,
+.show-password-icon:focus {
+  color: #3953e7;
+}
