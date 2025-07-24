@@ -1,0 +1,144 @@
+.dashboard-container {
+  margin: 2rem auto;
+  max-width: 80vw;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.dashboard-btn {
+  background: #322c8f;
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.6rem 1.3rem;
+  font-size: 1.08em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.dashboard-btn:hover,
+.dashboard-btn.cancel:hover {
+  background: #4b3fd1;
+}
+
+.dashboard-btn.cancel {
+  background: #e53935;
+}
+
+.add-widget-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30,32,44,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.add-widget-form {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 32px rgba(50,44,143,0.13);
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 320px;
+}
+
+.add-widget-form h3 {
+  margin: 0 0 0.5em 0;
+  color: #322c8f;
+}
+
+.add-widget-form label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 500;
+  color: #232336;
+  gap: 0.3em;
+}
+
+.add-widget-form input,
+.add-widget-form select {
+  padding: 0.5em 0.7em;
+  border-radius: 0.5em;
+  border: 1px solid #bfc1c7;
+  font-size: 1em;
+  margin-top: 0.2em;
+}
+
+.add-widget-actions {
+  display: flex;
+  gap: 1em;
+  justify-content: flex-end;
+}
+
+.dashboard-widget {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(50, 44, 143, 0.09);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border 0.18s;
+}
+
+.layout.editing .dashboard-widget {
+  border: 2px dashed #322c8f;
+}
+
+.widget-title {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  color: #322c8f;
+}
+
+.widget-type {
+  font-size: 0.98em;
+  color: #444;
+}
+
+.dashboard-widget-delete {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  font-size: 1.2em;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(50,44,143,0.09);
+  transition: background 0.18s;
+}
+.dashboard-widget-delete:hover {
+  background: #b71c1c;
+}
+.dashboard-widget {
+  position: relative;
+}
+.dashboard-widget {
+  min-width: 220px;
+  min-height: 120px;
+  max-width: 100%;
+  box-sizing: border-box;
+}

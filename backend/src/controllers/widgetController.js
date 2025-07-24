@@ -61,3 +61,20 @@ exports.deleteWidget = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+//Get widgets for the user
+exports.getWidgets = async (req, res) => {
+  const user_id = req.user.id;
+  try {
+    const { data, error } = await supabase
+      .from('user_widgets')
+      .select('*')
+      .eq('user_id', user_id);
+
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('Get widgets error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};

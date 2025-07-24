@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import './styles/Home.css';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
+import Dashboard from '../components/Dashboard';
 
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user, logout } = useContext(AuthContext);
+const { user, token, logout } = useContext(AuthContext);
 
   return (
     <div className="home-container">
     {user ? (
-      <>
-      </>
+      <Dashboard user={user} token={token} />
     ) : (
       <>
       {/* Hero Section */}
