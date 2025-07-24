@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
+import AccountDetails from './pages/AccountDetails';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/account" element={<AccountDetails />} />
         </Routes>
       </Router>
     </AuthProvider>
