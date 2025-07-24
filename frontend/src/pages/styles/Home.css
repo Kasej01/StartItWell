@@ -1,7 +1,10 @@
 .home-container {
   text-align: center;
-  margin: 50px auto;
-  max-width: 900px;
+  width: 95vw;
+  margin-top: 32px;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
   font-family: 'Segoe UI', 'Arial', sans-serif;
   color: #232336;
   border-radius: 1.5rem;

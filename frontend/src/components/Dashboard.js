@@ -6,11 +6,35 @@ import './styles/Dashboard.css';
 import TodoWidget from './widgets/TodoWidget';
 
 
+const getGridSettings = () => {
+  const width = window.innerWidth;
+  if (width >= 1600) return { cols: 12, width: 1600 };
+  if (width >= 1200) return { cols: 8, width: 1200 };
+  if (width >= 900) return { cols: 6, width: 900 };
+  return { cols: 2, width: Math.max(width - 32, 320) };
+};
+
 const Dashboard = ({ user, token }) => {
   const [widgets, setWidgets] = useState([]);
   const [editing, setEditing] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [newWidget, setNewWidget] = useState({ title: '', type: '' });
+  const [gridSettings, setGridSettings] = useState(getGridSettings());
+
+  const WIDGET_TYPE_DEFAULT_SIZES = {
+    todo: { size_x: 4, size_y: 4 },
+    // calendar: CALENDAR_WIDGET_DEFAULT_SIZE,
+    // ...add more as you create them
+  };
+  const defaultSize = WIDGET_TYPE_DEFAULT_SIZES[newWidget.type] || { size_x: 2, size_y: 2 };
+
+
+  // Responsive grid settings
+  useEffect(() => {
+    const handleResize = () => setGridSettings(getGridSettings());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch widgets from backend
   useEffect(() => {
@@ -33,8 +57,8 @@ const Dashboard = ({ user, token }) => {
   // Layout for react-grid-layout
   const layout = widgets.map((w, i) => ({
     i: w.id.toString(),
-    x: w.pos_x || (i % 4),
-    y: w.pos_y || Math.floor(i / 4),
+    x: w.pos_x || (i % gridSettings.cols),
+    y: w.pos_y || Math.floor(i / gridSettings.cols),
     w: w.size_x || 2,
     h: w.size_y || 2,
     static: !editing
@@ -82,8 +106,7 @@ const Dashboard = ({ user, token }) => {
         ...newWidget,
         pos_x: 0,
         pos_y: 0,
-        size_x: 2,
-        size_y: 2
+        ...defaultSize
       })
     });
     const data = await res.json();
@@ -141,11 +164,11 @@ const Dashboard = ({ user, token }) => {
       )}
 
       <GridLayout
-        className={`layout${editing ? ' editing' : ''}`}
+        className={`layout${editing ? ' editing' : ''} dashboard-grid-area`}
         layout={layout}
-        cols={4}
+        cols={gridSettings.cols}
         rowHeight={120}
-        width={1100}
+        width={gridSettings.width}
         isDraggable={editing}
         isResizable={editing}
         onLayoutChange={onLayoutChange}
@@ -158,7 +181,7 @@ const Dashboard = ({ user, token }) => {
                 className="dashboard-widget-delete react-draggable-cancel"
                 title="Delete Widget"
                 onClick={async (e) => {
-                  e.stopPropagation(); // Prevent bubbling just in case
+                  e.stopPropagation();
                   if (window.confirm('Delete this widget?')) {
                     const res = await fetch(`/api/widgets/${w.id}`, {
                       method: 'DELETE',

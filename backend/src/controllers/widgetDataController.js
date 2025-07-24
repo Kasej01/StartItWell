@@ -68,31 +68,41 @@ exports.getWidgetData = async (req, res) => {
 exports.updateWidgetData = async (req, res) => {
   const user_id = req.user.id;
   const data_id = req.params.id;
-  const { value, extra_data } = req.body;
-  
+  const { data } = req.body;
+
   try {
-    // First verify the widget data belongs to this user's widget
+    // Step 1: Get the widget_data row to find widget_id
     const { data: widgetData, error: dataError } = await supabase
       .from('widget_data')
-      .select('widget_data.id, user_widgets.user_id')
-      .eq('widget_data.id', data_id)
-      .join('user_widgets', {'widget_data.widget_id': 'user_widgets.id'})
+      .select('id, widget_id')
+      .eq('id', data_id)
       .single();
-    
-    if (dataError || !widgetData || widgetData.user_id !== user_id) {
-      return res.status(404).json({ error: 'Data not found or access denied' });
+
+    if (dataError || !widgetData) {
+      return res.status(404).json({ error: 'Data not found' });
     }
-    
+
+    // Step 2: Check that the widget belongs to this user
+    const { data: widget, error: widgetError } = await supabase
+      .from('user_widgets')
+      .select('user_id')
+      .eq('id', widgetData.widget_id)
+      .single();
+
+    if (widgetError || !widget || widget.user_id !== user_id) {
+      return res.status(404).json({ error: 'Access denied' });
+    }
+
     // Now update the data
-    const { data, error } = await supabase
+    const { data: updated, error } = await supabase
       .from('widget_data')
-      .update({ value, extra_data })
+      .update({ data })
       .eq('id', data_id)
       .select('*')
       .single();
-    
+
     if (error) throw error;
-    res.json(data);
+    res.json(updated);
   } catch (err) {
     console.error('Update widget data error:', err);
     res.status(500).json({ error: 'Server error' });

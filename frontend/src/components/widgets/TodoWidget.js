@@ -8,6 +8,34 @@ const TodoWidget = ({ widget, token }) => {
   const [items, setItems] = useState(widget.items || []);
   const [showAdd, setShowAdd] = useState(false);
   const [showDetail, setShowDetail] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [editDetail, setEditDetail] = useState(null);
+
+  // Save widget title to DB
+  const saveTitle = async (newTitle) => {
+    setTitle(newTitle);
+    setEditingTitle(false);
+    try {
+      const res = await fetch(`/api/widgets/${widget.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: newTitle })
+      });
+      if (!res.ok) throw new Error('Failed to update widget title');
+    } catch (err) {
+      console.error('Failed to update widget title:', err);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (confirmDelete) {
+      await deleteItem(confirmDelete);
+      setConfirmDelete(null);
+    }
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -16,8 +44,9 @@ const TodoWidget = ({ widget, token }) => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
+        // Save both the widget_data id and the todo data for updates
         const todoItems = Array.isArray(data)
-          ? data.map(item => item.data)
+          ? data.map(item => ({ ...item.data, _dbId: item.id }))
           : [];
         setItems(todoItems);
       } catch (err) {
@@ -36,31 +65,60 @@ const TodoWidget = ({ widget, token }) => {
   });
 
   // Mark item as done/undone
-  const toggleDone = id => {
+  const toggleDone = async id => {
     setItems(items =>
       items.map(item =>
         item.id === id ? { ...item, done: !item.done } : item
       )
     );
+    // Find the item and its db id
+    const item = items.find(i => i.id === id);
+    if (!item || !item._dbId) return;
+    try {
+      await fetch(`/api/widget-data/${item._dbId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          data: { ...item, done: !item.done } // send updated todo object
+        })
+      });
+    } catch (err) {
+      console.error('Failed to update todo status:', err);
+    }
   };
 
   // Delete item
-  const deleteItem = id => {
+  const deleteItem = async id => {
+    const item = items.find(i => i.id === id);
     setItems(items => items.filter(item => item.id !== id));
     setShowDetail(null);
+    if (!item || !item._dbId) return;
+    try {
+      await fetch(`/api/widget-data/${item._dbId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+    } catch (err) {
+      console.error('Failed to delete todo:', err);
+    }
   };
 
   const handleAddItem = async (e) => {
     e.preventDefault();
-    
+
     const newId = Date.now();
     const newTodoItem = { ...newItem, id: newId, done: false };
-    
-    // Optimistically update UI
+
+    // Optimistically add, but will update with db id after POST
     setItems([...items, newTodoItem]);
     setShowAdd(false);
     setNewItem({ name: '', description: '', due: '', priority: 'Normal' });
-    
+
     // Save to database
     try {
       const res = await fetch('/api/widget-data', {
@@ -74,12 +132,56 @@ const TodoWidget = ({ widget, token }) => {
           data: newTodoItem // send the whole todo object
         })
       });
-      
-      if (!res.ok) {
+
+      if (res.ok) {
+        const dbItem = await res.json();
+        // Update the item in state with the db id
+        setItems(items =>
+          items.map(item =>
+            item.id === newId ? { ...item, _dbId: dbItem.id } : item
+          )
+        );
+      } else {
         console.error('Failed to save todo item');
       }
     } catch (err) {
       console.error('Error saving todo item:', err);
+    }
+  };
+
+  // Edit item handlers
+  const handleEditDetail = (item) => {
+    setEditDetail({ ...item });
+    setShowDetail(null);
+  };
+
+  const handleEditDetailChange = (field, value) => {
+    setEditDetail(editDetail => ({ ...editDetail, [field]: value }));
+  };
+
+  const handleEditDetailSave = async () => {
+    if (!editDetail || !editDetail._dbId) return;
+    try {
+      const res = await fetch(`/api/widget-data/${editDetail._dbId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ data: editDetail })
+      });
+      if (res.ok) {
+        setItems(items =>
+          items.map(item =>
+            item.id === editDetail.id ? { ...editDetail } : item
+          )
+        );
+        setEditDetail(null);
+      } else {
+        console.error('Failed to update todo item');
+      }
+    } catch (err) {
+      console.error('Failed to update todo item:', err);
     }
   };
 
@@ -90,13 +192,25 @@ const TodoWidget = ({ widget, token }) => {
           <input
             value={title}
             onChange={e => setTitle(e.target.value)}
-            onBlur={() => setEditingTitle(false)}
+            onBlur={() => saveTitle(title)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.target.blur();
+              }
+            }}
             autoFocus
           />
         ) : (
           <h4 onClick={() => setEditingTitle(true)} title="Click to edit">{title}</h4>
         )}
-        <button className="todo-add-btn" onClick={() => setShowAdd(true)}>+ Add</button>
+      </div>
+      {/* Column headers */}
+      <div className="todo-list-header">
+        <span className="todo-col-checkbox"></span>
+        <span className="todo-col-name">Name</span>
+        <span className="todo-col-due">Due Date</span>
+        <span className="todo-col-priority">Priority</span>
+        <span className="todo-col-actions"></span>
       </div>
       <ul className="todo-list">
         {items.map(item => (
@@ -112,22 +226,44 @@ const TodoWidget = ({ widget, token }) => {
             />
             <span
               className="todo-item-name"
-              onClick={() => setShowDetail(item)}
+              onClick={() => handleEditDetail(item)}
               style={{ textDecoration: item.done ? 'line-through' : 'none', cursor: 'pointer' }}
             >
               {item.name}
             </span>
             <span className="todo-item-due">{item.due}</span>
-            <button
+            <span className={`priority-ball ${item.priority.toLowerCase()}`}>
+              <span className="priority-ball-tooltip">
+                {item.priority}
+              </span>
+            </span>            <button
               className="todo-delete-btn"
               title="Delete"
-              onClick={() => deleteItem(item.id)}
+              onClick={() => setConfirmDelete(item.id)}
             >
               ✕
             </button>
           </li>
         ))}
+        <li className="todo-list-add-row">
+          <button className="todo-add-btn" onClick={() => setShowAdd(true)}>+ Add</button>
+        </li>
       </ul>
+
+      {/* Delete confirmation popup */}
+      {confirmDelete && ReactDOM.createPortal(
+        <div className="todo-modal-bg" onClick={() => setConfirmDelete(null)}>
+          <div className="todo-modal" onClick={e => e.stopPropagation()}>
+            <h5>Delete To-Do Item</h5>
+            <p>Are you sure you want to delete this item?</p>
+            <div className="todo-modal-actions">
+              <button onClick={handleDeleteConfirm} style={{ background: '#e53935', color: '#fff' }}>Delete</button>
+              <button onClick={() => setConfirmDelete(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Add Item Modal */}
       {showAdd && ReactDOM.createPortal(
@@ -144,7 +280,7 @@ const TodoWidget = ({ widget, token }) => {
             </label>
             <label>
               Short Description:
-              <input
+              <textarea
                 value={newItem.description}
                 onChange={e => setNewItem({ ...newItem, description: e.target.value })}
                 required
@@ -179,23 +315,50 @@ const TodoWidget = ({ widget, token }) => {
         document.body
       )}
 
-      {/* Detail Modal */}
-      {showDetail && ReactDOM.createPortal(
-        <div className="todo-modal-bg" onClick={() => setShowDetail(null)}>
+      {/* Edit/Detail Modal */}
+      {editDetail && ReactDOM.createPortal(
+        <div className="todo-modal-bg" onClick={() => setEditDetail(null)}>
           <div className="todo-modal" onClick={e => e.stopPropagation()}>
-            <h5>{showDetail.name}</h5>
-            <p><strong>Description:</strong> {showDetail.description}</p>
-            <p><strong>Due Date:</strong> {showDetail.due}</p>
-            <p><strong>Priority:</strong> {showDetail.priority}</p>
-            <div className="todo-modal-actions">
-              <button onClick={() => setShowDetail(null)}>Close</button>
-              <button
-                className="todo-delete-btn"
-                onClick={() => deleteItem(showDetail.id)}
-                style={{ marginLeft: '1em', background: '#e53935', color: '#fff' }}
+            <h5>Edit To-Do Item</h5>
+            <label>
+              Name:
+              <input
+                value={editDetail.name}
+                onChange={e => handleEditDetailChange('name', e.target.value)}
+                required
+              />
+            </label>
+            <label>
+              Short Description:
+              <textarea
+                value={newItem.description}
+                onChange={e => setNewItem({ ...newItem, description: e.target.value })}
+                required
+              />
+            </label>
+            <label>
+              Due Date:
+              <input
+                type="date"
+                value={editDetail.due}
+                onChange={e => handleEditDetailChange('due', e.target.value)}
+                required
+              />
+            </label>
+            <label>
+              Priority:
+              <select
+                value={editDetail.priority}
+                onChange={e => handleEditDetailChange('priority', e.target.value)}
               >
-                Delete
-              </button>
+                <option>Low</option>
+                <option>Normal</option>
+                <option>High</option>
+              </select>
+            </label>
+            <div className="todo-modal-actions">
+              <button onClick={handleEditDetailSave} style={{ background: '#43a047', color: '#fff' }}>Save</button>
+              <button onClick={() => setEditDetail(null)}>Cancel</button>
             </div>
           </div>
         </div>,
