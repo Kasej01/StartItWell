@@ -96,7 +96,7 @@ const Dashboard = ({ user, token }) => {
   // Add widget handler
   const handleAddWidget = async e => {
     e.preventDefault();
-    const res = await fetch('${process.env.REACT_APP_API_URL}/api/widgets', {
+    const res = await fetch( `${process.env.REACT_APP_API_URL}/api/widgets`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
