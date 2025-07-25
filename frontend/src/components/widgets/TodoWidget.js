@@ -121,7 +121,7 @@ const TodoWidget = ({ widget, token }) => {
 
     // Save to database
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/api/widget-data', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
