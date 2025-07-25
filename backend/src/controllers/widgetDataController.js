@@ -111,32 +111,56 @@ exports.updateWidgetData = async (req, res) => {
 
 // Delete widget data item
 exports.deleteWidgetData = async (req, res) => {
-  const user_id = req.user.id;
-  const data_id = req.params.id;
-  
   try {
-    // First verify the widget data belongs to this user's widget
+    const user_id = req.user.id;
+    const data_id = req.params.id;
+    
+    // Step 1: Get the widget_data row to find widget_id
     const { data: widgetData, error: dataError } = await supabase
       .from('widget_data')
-      .select('widget_data.id, user_widgets.user_id')
-      .eq('widget_data.id', data_id)
-      .join('user_widgets', {'widget_data.widget_id': 'user_widgets.id'})
+      .select('id, widget_id')
+      .eq('id', data_id)
       .single();
-    
-    if (dataError || !widgetData || widgetData.user_id !== user_id) {
-      return res.status(404).json({ error: 'Data not found or access denied' });
+
+    if (dataError) {
+      console.error('Error retrieving widget data:', dataError);
+      return res.status(500).json({ error: 'Failed to retrieve widget data' });
     }
     
-    // Now delete the data
-    const { error } = await supabase
+    if (!widgetData) {
+      return res.status(404).json({ error: 'Widget data not found' });
+    }
+
+    // Step 2: Check that the widget belongs to this user
+    const { data: widget, error: widgetError } = await supabase
+      .from('user_widgets')
+      .select('user_id')
+      .eq('id', widgetData.widget_id)
+      .single();
+
+    if (widgetError) {
+      console.error('Error checking widget ownership:', widgetError);
+      return res.status(500).json({ error: 'Failed to verify ownership' });
+    }
+    
+    if (!widget || widget.user_id !== user_id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Step 3: Delete the widget data
+    const { error: deleteError } = await supabase
       .from('widget_data')
       .delete()
       .eq('id', data_id);
     
-    if (error) throw error;
-    res.json({ message: 'Widget data deleted' });
-  } catch (err) {
-    console.error('Delete widget data error:', err);
-    res.status(500).json({ error: 'Server error' });
+    if (deleteError) {
+      console.error('Error deleting widget data:', deleteError);
+      return res.status(500).json({ error: 'Failed to delete widget data' });
+    }
+    
+    res.status(200).json({ message: 'Widget data deleted successfully' });
+  } catch (error) {
+    console.error('Error in deleteWidgetData:', error);
+    res.status(500).json({ error: 'Server error deleting widget data' });
   }
 };

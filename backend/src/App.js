@@ -6,7 +6,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const widgetRoutes = require('./routes/widgets');
 const widgetDataRoutes = require('./routes/widgetData');
-
+const calendarEventsRoutes = require('./routes/calendarEvents');
 
 const app = express();
 app.use(cors());
@@ -16,6 +16,7 @@ app.use('/api/widgets', widgetRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/widget-data', widgetDataRoutes);
+app.use('/api/calendar-events', calendarEventsRoutes);
 
 app.get('/', (req, res) => {
   res.send({ message: 'Welcome to StartItWell backend!' });
