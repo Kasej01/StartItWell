@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import './styles/AccountDetails.css';
 import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom'; // <-- Add this import
 
 const AccountDetails = ({ onLogout }) => {
   const { user, token } = useContext(AuthContext);
@@ -17,6 +18,8 @@ const AccountDetails = ({ onLogout }) => {
   const [delFields, setDelFields] = useState({
     pw1: '', pw2: '', error: '', confirm: false
   });
+
+  const navigate = useNavigate(); // <-- Add this line
 
   // Fetch user info
   useEffect(() => {
@@ -99,14 +102,12 @@ const AccountDetails = ({ onLogout }) => {
   const submitDel = async e => {
     e.preventDefault();
     if (!delFields.pw1 || !delFields.pw2) {
-      setDelFields(f => ({ ...f, error: 'Both password fields required' })); return;
+      setDelFields(f => ({ ...f, error: 'Both password fields required', confirm: false })); return;
     }
     if (delFields.pw1 !== delFields.pw2) {
-      setDelFields(f => ({ ...f, error: 'Passwords do not match' })); return;
+      setDelFields(f => ({ ...f, error: 'Passwords do not match', confirm: false })); return;
     }
-    setDelFields(f => ({ ...f, confirm: true }));
-  };
-  const confirmDelete = async () => {
+    // Check password before showing confirm
     const res = await fetch(`/api/users/${user.id}/password`, {
       method: 'PUT',
       headers: {
@@ -122,13 +123,27 @@ const AccountDetails = ({ onLogout }) => {
       setDelFields(f => ({ ...f, error: 'Password incorrect', confirm: false }));
       return;
     }
-    // Now delete
+    setDelFields(f => ({ ...f, error: '', confirm: true }));
+  };
+
+  const confirmDelete = async () => {
+    // Actually delete the account
     const delRes = await fetch(`/api/users/${user.id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
     });
     if (delRes.ok) {
+      // Remove token from localStorage/sessionStorage
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+      // Optionally clear user info if you store it
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('user');
+      // Call onLogout if provided
       onLogout && onLogout();
+      // Redirect to home and reload page
+      navigate('/');
+      window.location.reload();
     } else {
       setDelFields(f => ({ ...f, error: 'Failed to delete account', confirm: false }));
     }
