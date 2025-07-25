@@ -212,43 +212,45 @@ const TodoWidget = ({ widget, token }) => {
         <span className="todo-col-priority">Priority</span>
         <span className="todo-col-actions"></span>
       </div>
-      <ul className="todo-list">
-        {items.map(item => (
-          <li
-            key={item.id}
-            className={`todo-list-item${item.done ? ' done' : ''}`}
-          >
-            <input
-              type="checkbox"
-              checked={!!item.done}
-              onChange={() => toggleDone(item.id)}
-              title="Mark as done"
-            />
-            <span
-              className="todo-item-name"
-              onClick={() => handleEditDetail(item)}
-              style={{ textDecoration: item.done ? 'line-through' : 'none', cursor: 'pointer' }}
+      <div className="todo-list-container"> {/* Add this container div */}
+        <ul className="todo-list">
+          {items.map(item => (
+            <li
+              key={item.id}
+              className={`todo-list-item${item.done ? ' done' : ''}`}
             >
-              {item.name}
-            </span>
-            <span className="todo-item-due">{item.due}</span>
-            <span className={`priority-ball ${item.priority.toLowerCase()}`}>
-              <span className="priority-ball-tooltip">
-                {item.priority}
+              <input
+                type="checkbox"
+                checked={!!item.done}
+                onChange={() => toggleDone(item.id)}
+                title="Mark as done"
+              />
+              <span
+                className="todo-item-name"
+                onClick={() => handleEditDetail(item)}
+                style={{ textDecoration: item.done ? 'line-through' : 'none', cursor: 'pointer' }}
+              >
+                {item.name}
               </span>
-            </span>            <button
-              className="todo-delete-btn"
-              title="Delete"
-              onClick={() => setConfirmDelete(item.id)}
-            >
-              ✕
-            </button>
-          </li>
-        ))}
-        <li className="todo-list-add-row">
+              <span className="todo-item-due">{item.due}</span>
+              <span className={`priority-ball ${item.priority.toLowerCase()}`}>
+                <span className="priority-ball-tooltip">
+                  {item.priority}
+                </span>
+              </span>            <button
+                className="todo-delete-btn"
+                title="Delete"
+                onClick={() => setConfirmDelete(item.id)}
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="todo-list-add-row">
           <button className="todo-add-btn" onClick={() => setShowAdd(true)}>+ Add</button>
-        </li>
-      </ul>
+      </div>
 
       {/* Delete confirmation popup */}
       {confirmDelete && ReactDOM.createPortal(

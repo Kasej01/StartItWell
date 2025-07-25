@@ -131,6 +131,7 @@
 }
 
 .todo-list-add-row {
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -138,10 +139,9 @@
   padding: 0.7em 0 0.2em 0;
   border-bottom-left-radius: 1em;
   border-bottom-right-radius: 1em;
-}
-
-.todo-add-btn:hover {
-  background: #ff8a50;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(50,44,143,0.03);
+  z-index: 2;
 }
 
 .todo-list {
@@ -304,4 +304,68 @@
 .priority-ball:hover .priority-ball-tooltip {
   visibility: visible;
   opacity: 1;
+}
+
+/* Make the todo-list area scrollable if it gets too tall */
+.todo-widget {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.todo-header,
+.todo-list-header,
+.todo-list-add-row {
+  flex-shrink: 0;
+}
+
+.todo-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 0;
+}
+
+
+.todo-list::-webkit-scrollbar {
+  width: 7px;
+}
+.todo-list::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.todo-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.todo-header,
+.todo-list-header,
+.todo-list-add-row {
+  flex-shrink: 0;
+}
+
+.todo-list-container {
+  height: 80%;
+  overflow: hidden;
+  position: relative;
+}
+
+.todo-list {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin: 0;
+  position: relative;
+}
+
+.todo-list-add-row {
+  height: 5%; /* Space for the add button */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  z-index: 2;
 }

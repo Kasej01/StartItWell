@@ -4,6 +4,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import './styles/Dashboard.css';
 import TodoWidget from './widgets/TodoWidget';
+import CalendarWidget from './widgets/CalendarWidget';
 
 
 const getGridSettings = () => {
@@ -22,9 +23,8 @@ const Dashboard = ({ user, token }) => {
   const [gridSettings, setGridSettings] = useState(getGridSettings());
 
   const WIDGET_TYPE_DEFAULT_SIZES = {
-    todo: { size_x: 4, size_y: 4 },
-    // calendar: CALENDAR_WIDGET_DEFAULT_SIZE,
-    // ...add more as you create them
+    todo: { size_x: 3, size_y: 4 },
+    calendar: { size_x: 8, size_y: 4 }, // larger than todo
   };
   const defaultSize = WIDGET_TYPE_DEFAULT_SIZES[newWidget.type] || { size_x: 2, size_y: 2 };
 
@@ -122,9 +122,11 @@ const Dashboard = ({ user, token }) => {
       <div className="dashboard-header">
         <h2>Your Dashboard</h2>
         <div className="dashboard-header-actions">
-          <button className="dashboard-btn" onClick={() => setShowAdd(true)}>
-            + Add Widget
-          </button>
+          {editing && (
+            <button className="dashboard-btn" onClick={() => setShowAdd(true)}>
+              + Add Widget
+            </button>
+          )}
           <button className="dashboard-btn" onClick={() => setEditing(e => !e)}>
             {editing ? 'Exit Edit Mode' : 'Edit Dashboard'}
           </button>
@@ -146,14 +148,15 @@ const Dashboard = ({ user, token }) => {
             </label>
             <label>
               Type:
-            <select
-              value={newWidget.type}
-              onChange={e => setNewWidget({ ...newWidget, type: e.target.value })}
-              required
-            >
-              <option value="" disabled>Select a widget type</option>
-              <option value="todo">To-Do</option>
-            </select>
+              <select
+                value={newWidget.type}
+                onChange={e => setNewWidget({ ...newWidget, type: e.target.value })}
+                required
+              >
+                <option value="" disabled>Select a widget type</option>
+                <option value="todo">To-Do</option>
+                <option value="calendar">Calendar</option>
+              </select>
             </label>
             <div className="add-widget-actions">
               <button type="submit" className="dashboard-btn">Add</button>
@@ -198,9 +201,11 @@ const Dashboard = ({ user, token }) => {
                 ✕
               </button>
             )}
-            {w.type === 'todo'
-              ? <TodoWidget widget={w} token={token} />
-              : (
+            {w.type === 'calendar' ? (
+              <CalendarWidget widget={w} token={token} />
+            ) : w.type === 'todo' ? (
+              <TodoWidget widget={w} token={token} />
+            ) : (
                 <>
                   <div className="widget-title">{w.title}</div>
                   <div className="widget-type">{w.type}</div>
