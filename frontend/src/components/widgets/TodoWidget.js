@@ -16,7 +16,7 @@ const TodoWidget = ({ widget, token }) => {
     setTitle(newTitle);
     setEditingTitle(false);
     try {
-      const res = await fetch(`/api/widgets/${widget.id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widgets/${widget.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ const TodoWidget = ({ widget, token }) => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await fetch(`/api/widget-data/${widget.id}`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data/${widget.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -75,7 +75,7 @@ const TodoWidget = ({ widget, token }) => {
     const item = items.find(i => i.id === id);
     if (!item || !item._dbId) return;
     try {
-      await fetch(`/api/widget-data/${item._dbId}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data/${item._dbId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const TodoWidget = ({ widget, token }) => {
     setShowDetail(null);
     if (!item || !item._dbId) return;
     try {
-      await fetch(`/api/widget-data/${item._dbId}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data/${item._dbId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -121,7 +121,7 @@ const TodoWidget = ({ widget, token }) => {
 
     // Save to database
     try {
-      const res = await fetch('/api/widget-data', {
+      const res = await fetch('${process.env.REACT_APP_API_URL}/api/widget-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ const TodoWidget = ({ widget, token }) => {
   const handleEditDetailSave = async () => {
     if (!editDetail || !editDetail._dbId) return;
     try {
-      const res = await fetch(`/api/widget-data/${editDetail._dbId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data/${editDetail._dbId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -24,7 +24,7 @@ const AccountDetails = ({ onLogout }) => {
   // Fetch user info
   useEffect(() => {
     if (!user || !token) return;
-    fetch(`/api/users/${user.id}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/api/users/${user.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())
@@ -45,7 +45,7 @@ const AccountDetails = ({ onLogout }) => {
     console.log('handleSave called');
     setLoading(true);
     setMsg('');
-    const res = await fetch(`/api/users/${user.id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${user.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const AccountDetails = ({ onLogout }) => {
     if (pwFields.current1 === pwFields.newpw) {
       setPwFields(f => ({ ...f, error: 'New password must be different' })); return;
     }
-    const res = await fetch(`/api/users/${user.id}/password`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${user.id}/password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const AccountDetails = ({ onLogout }) => {
       setDelFields(f => ({ ...f, error: 'Passwords do not match', confirm: false })); return;
     }
     // Check password before showing confirm
-    const res = await fetch(`/api/users/${user.id}/password`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${user.id}/password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ const AccountDetails = ({ onLogout }) => {
 
   const confirmDelete = async () => {
     // Actually delete the account
-    const delRes = await fetch(`/api/users/${user.id}`, {
+    const delRes = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${user.id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
     });

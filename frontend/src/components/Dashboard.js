@@ -39,7 +39,7 @@ const Dashboard = ({ user, token }) => {
   // Fetch widgets from backend
   useEffect(() => {
     const fetchWidgets = async () => {
-      const res = await fetch('/api/widgets', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widgets`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -77,7 +77,7 @@ const Dashboard = ({ user, token }) => {
     );
     // Send updates to backend for persistence
     for (const l of newLayout) {
-      await fetch(`/api/widgets/${l.i}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/widgets/${l.i}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ const Dashboard = ({ user, token }) => {
   // Add widget handler
   const handleAddWidget = async e => {
     e.preventDefault();
-    const res = await fetch('/api/widgets', {
+    const res = await fetch('${process.env.REACT_APP_API_URL}/api/widgets', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -186,7 +186,7 @@ const Dashboard = ({ user, token }) => {
                 onClick={async (e) => {
                   e.stopPropagation();
                   if (window.confirm('Delete this widget?')) {
-                    const res = await fetch(`/api/widgets/${w.id}`, {
+                    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widgets/${w.id}`, {
                       method: 'DELETE',
                       headers: { Authorization: `Bearer ${token}` }
                     });

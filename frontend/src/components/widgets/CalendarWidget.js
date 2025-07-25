@@ -34,7 +34,7 @@ const CalendarWidget = ({ widget, token }) => {
   // Fetch events
   useEffect(() => {
     const fetchEvents = async () => {
-      const res = await fetch(`/api/calendar-events/${widget.id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/calendar-events/${widget.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -59,7 +59,7 @@ const CalendarWidget = ({ widget, token }) => {
     const startUTC = new Date(newEvent.start).toISOString();
     const endUTC = new Date(newEvent.end).toISOString();
 
-    const res = await fetch('/api/calendar-events', {
+    const res = await fetch('${process.env.REACT_APP_API_URL}/api/calendar-events', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const CalendarWidget = ({ widget, token }) => {
     e.preventDefault();
     const startUTC = new Date(editEvent.start).toISOString();
     const endUTC = new Date(editEvent.end).toISOString();
-    const res = await fetch(`/api/calendar-events/${editEvent.id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/calendar-events/${editEvent.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ const CalendarWidget = ({ widget, token }) => {
   // Handler for delete
   const handleDeleteEvent = async () => {
     if (!selectedEvent) return;
-    await fetch(`/api/calendar-events/${selectedEvent.id}`, {
+    await fetch(`${process.env.REACT_APP_API_URL}/api/calendar-events/${selectedEvent.id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
