@@ -1,0 +1,142 @@
+.focus-timer-widget {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 1.5rem 1.2rem;
+  min-width: 260px;
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.focus-timer-widget .widget-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.1rem;
+  color: #322c8f;
+}
+
+.timer-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.timer-session {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+  color: #43a047;
+}
+
+.timer-session.break { color: #e53935; }
+.timer-session.longBreak { color: #3953e7; }
+
+.timer-countdown {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.timer-controls button {
+  background: #322c8f;
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.5rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.timer-controls button:hover {
+  background: #43a047;
+}
+
+.timer-pomodoro-count {
+  font-size: 1rem;
+  margin-top: 0.2rem;
+  color: #444;
+}
+
+.focus-timer-modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(30,32,44,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.focus-timer-modal {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 320px;
+}
+
+.focus-timer-modal h5 {
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  font-size: 1.2rem;
+  color: #322c8f;
+}
+
+.focus-timer-modal label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.focus-timer-modal input[type="number"] {
+  margin-top: 0.2rem;
+  padding: 0.3rem;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.focus-timer-modal select {
+  margin-top: 0.2rem;
+  padding: 0.3rem;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.focus-timer-modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.focus-timer-modal-actions button {
+  background: #322c8f;
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.5rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.focus-timer-modal-actions button:hover {
+  background: #43a047;
+}

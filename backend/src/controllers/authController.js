@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
       .single();
 
     if (error) {
-      // Unique violation for email
+      // Handle emails that are already registered
       if (error.code === '23505' || error.message.includes('duplicate key')) {
         return res.status(400).json({ error: 'Email already exists, please try logging in or Sign up with a different email' });
       }
@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const normalizedEmail = email.toLowerCase();
-    // Fetch user by normalized email
+    // Fetch user by email
     const { data: user, error } = await supabase
       .from('users')
       .select('*')

@@ -5,11 +5,12 @@ import 'react-resizable/css/styles.css';
 import './styles/Dashboard.css';
 import TodoWidget from './widgets/TodoWidget';
 import CalendarWidget from './widgets/CalendarWidget';
+import FocusTimerWidget from './widgets/FocusTimerWidget';
 
 
 const getGridSettings = () => {
   const width = window.innerWidth;
-  if (width >= 1600) return { cols: 12, width: 1600 };
+  if (width >= 1600) return { cols: 14, width: 1600 };
   if (width >= 1200) return { cols: 8, width: 1200 };
   if (width >= 900) return { cols: 6, width: 900 };
   return { cols: 2, width: Math.max(width - 32, 320) };
@@ -24,7 +25,8 @@ const Dashboard = ({ user, token }) => {
 
   const WIDGET_TYPE_DEFAULT_SIZES = {
     todo: { size_x: 3, size_y: 4 },
-    calendar: { size_x: 8, size_y: 4 }, // larger than todo
+    calendar: { size_x: 8, size_y: 4 },
+    focustimer: { size_x: 3, size_y: 2 }
   };
   const defaultSize = WIDGET_TYPE_DEFAULT_SIZES[newWidget.type] || { size_x: 2, size_y: 2 };
 
@@ -155,6 +157,7 @@ const Dashboard = ({ user, token }) => {
               >
                 <option value="" disabled>Select a widget type</option>
                 <option value="todo">To-Do</option>
+                <option value="focustimer">Focus Timer</option>
                 <option value="calendar">Calendar</option>
               </select>
             </label>
@@ -203,6 +206,8 @@ const Dashboard = ({ user, token }) => {
             )}
             {w.type === 'calendar' ? (
               <CalendarWidget widget={w} token={token} />
+            ) : w.type === 'focustimer' ? (
+              <FocusTimerWidget widget={w} token={token} />
             ) : w.type === 'todo' ? (
               <TodoWidget widget={w} token={token} />
             ) : (

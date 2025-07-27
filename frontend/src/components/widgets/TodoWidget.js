@@ -56,7 +56,6 @@ const TodoWidget = ({ widget, token }) => {
     fetchItems();
   }, [widget.id, token]);
 
-  // New item state
   const [newItem, setNewItem] = useState({
     name: '',
     description: '',
@@ -82,7 +81,7 @@ const TodoWidget = ({ widget, token }) => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          data: { ...item, done: !item.done } // send updated todo object
+          data: { ...item, done: !item.done }
         })
       });
     } catch (err) {
@@ -114,7 +113,6 @@ const TodoWidget = ({ widget, token }) => {
     const newId = Date.now();
     const newTodoItem = { ...newItem, id: newId, done: false };
 
-    // Optimistically add, but will update with db id after POST
     setItems([...items, newTodoItem]);
     setShowAdd(false);
     setNewItem({ name: '', description: '', due: '', priority: 'Normal' });
@@ -129,7 +127,7 @@ const TodoWidget = ({ widget, token }) => {
         },
         body: JSON.stringify({
           widget_id: widget.id,
-          data: newTodoItem // send the whole todo object
+          data: newTodoItem
         })
       });
 
