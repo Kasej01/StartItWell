@@ -7,6 +7,7 @@ import TodoWidget from './widgets/TodoWidget';
 import CalendarWidget from './widgets/CalendarWidget';
 import FocusTimerWidget from './widgets/FocusTimerWidget';
 import NotesWidget from './widgets/NotesWidget';
+import DailyRoutineWidget from './widgets/DailyRoutineWidget';
 
 
 const getGridSettings = () => {
@@ -15,7 +16,7 @@ const getGridSettings = () => {
   if (width >= 1200) return { cols: 8, width: 1200 };
   if (width >= 900) return { cols: 6, width: 900 };
   if (width >= 600) return { cols: 4, width: width - 32 };
-  return { cols: 4, width: Math.max(width - 16, 320) }; // For very small screens
+  return { cols: 4, width: Math.max(width - 16, 320) };
 };
 
 const getWidgetDefaultSize = (type) => {
@@ -24,6 +25,7 @@ const getWidgetDefaultSize = (type) => {
   if (type === 'calendar') return width < 600 ? { size_x: 4, size_y: 4 } : { size_x: 8, size_y: 4 };
   if (type === 'focustimer') return width < 600 ? { size_x: 2, size_y: 2 } : { size_x: 3, size_y: 2 };
   if (type === 'notes') return width < 600 ? { size_x: 2, size_y: 1 } : { size_x: 2, size_y: 1 };
+  if (type === 'dailyroutine') return width < 600 ? { size_x: 3, size_y: 3 } : { size_x: 3, size_y: 3 };
   return { size_x: 3, size_y: 1 };
 };
 
@@ -43,14 +45,21 @@ const Dashboard = ({ user, token }) => {
 
   // Responsive grid and widget sizes
   useEffect(() => {
+    let lastIsMobile = window.innerWidth < 600;
     const handleResize = () => {
-      setGridSettings(getGridSettings());
-      setWidgets(widgets =>
-        widgets.map(w => ({
-          ...w,
-          ...getWidgetDefaultSize(w.type)
-        }))
-      );
+      const isMobile = window.innerWidth < 600;
+      if (isMobile !== lastIsMobile) {
+        setGridSettings(getGridSettings());
+        setWidgets(widgets =>
+          widgets.map(w => ({
+            ...w,
+            ...getWidgetDefaultSize(w.type)
+          }))
+        );
+        lastIsMobile = isMobile;
+      } else {
+        setGridSettings(getGridSettings());
+      }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -77,10 +86,10 @@ const Dashboard = ({ user, token }) => {
   // Layout for react-grid-layout
   const layout = widgets.map((w, i) => ({
     i: w.id.toString(),
-    x: w.pos_x || (i % gridSettings.cols),
-    y: w.pos_y || Math.floor(i / gridSettings.cols),
-    w: w.size_x || 2,
-    h: w.size_y || 2,
+    x: typeof w.pos_x === 'number' ? w.pos_x : (i % gridSettings.cols),
+    y: typeof w.pos_y === 'number' ? w.pos_y : Math.floor(i / gridSettings.cols),
+    w: typeof w.size_x === 'number' ? w.size_x : getWidgetDefaultSize(w.type).size_x,
+    h: typeof w.size_y === 'number' ? w.size_y : getWidgetDefaultSize(w.type).size_y,
     static: !editing
   }));
 
@@ -171,6 +180,7 @@ const Dashboard = ({ user, token }) => {
                 <option value="notes">Notes</option>
                 <option value="focustimer">Timer</option>
                 <option value="calendar">Calendar</option>
+                <option value="dailyroutine">Daily Routine Checklist</option>
               </select>
             </label>
             <div className="add-widget-actions">
@@ -220,6 +230,8 @@ const Dashboard = ({ user, token }) => {
               <NotesWidget widget={w} token={token} />
             ) : w.type === 'calendar' ? (
               <CalendarWidget widget={w} token={token} />
+            ) : w.type === 'dailyroutine' ? (
+              <DailyRoutineWidget widget={w} token={token} />
             ) : w.type === 'focustimer' ? (
               <FocusTimerWidget widget={w} token={token} />
             ) : w.type === 'todo' ? (
