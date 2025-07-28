@@ -8,6 +8,7 @@ import CalendarWidget from './widgets/CalendarWidget';
 import FocusTimerWidget from './widgets/FocusTimerWidget';
 import NotesWidget from './widgets/NotesWidget';
 import DailyRoutineWidget from './widgets/DailyRoutineWidget';
+import MotivationalQuoteWidget from './widgets/MotivationalQuoteWidget';
 
 
 const getGridSettings = () => {
@@ -26,6 +27,7 @@ const getWidgetDefaultSize = (type) => {
   if (type === 'focustimer') return width < 600 ? { size_x: 2, size_y: 2 } : { size_x: 3, size_y: 2 };
   if (type === 'notes') return width < 600 ? { size_x: 2, size_y: 1 } : { size_x: 2, size_y: 1 };
   if (type === 'dailyroutine') return width < 600 ? { size_x: 3, size_y: 3 } : { size_x: 3, size_y: 3 };
+  if (type === 'motivationalquote') return width < 600 ? { size_x: 3, size_y: 1 } : { size_x: 3, size_y: 1 };
   return { size_x: 3, size_y: 1 };
 };
 
@@ -179,8 +181,9 @@ const Dashboard = ({ user, token }) => {
                 <option value="todo">To-Do List</option>
                 <option value="notes">Notes</option>
                 <option value="focustimer">Timer</option>
-                <option value="calendar">Calendar</option>
+                <option value="motivationalquote">Motivational Quote</option>
                 <option value="dailyroutine">Daily Routine Checklist</option>
+                <option value="calendar">Calendar</option>
               </select>
             </label>
             <div className="add-widget-actions">
@@ -230,7 +233,9 @@ const Dashboard = ({ user, token }) => {
               <NotesWidget widget={w} token={token} />
             ) : w.type === 'calendar' ? (
               <CalendarWidget widget={w} token={token} />
-            ) : w.type === 'dailyroutine' ? (
+            ) : w.type === 'motivationalquote' ? (
+              <MotivationalQuoteWidget widget={w} token={token} />
+            ): w.type === 'dailyroutine' ? (
               <DailyRoutineWidget widget={w} token={token} />
             ) : w.type === 'focustimer' ? (
               <FocusTimerWidget widget={w} token={token} />

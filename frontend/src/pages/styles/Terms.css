@@ -1,0 +1,35 @@
+.terms-container {
+  max-width: 700px;
+  width: 100%;
+  margin: 2em auto 3em auto;
+  padding: 2em 1em;
+  background: #181a20;
+  color: #e0e0e0;
+  border-radius: 1em;
+  box-shadow: 0 2px 16px rgba(24,26,32,0.12);
+  font-size: 1.08em;
+  display: block;
+}
+
+.terms-container h1 {
+  font-size: 2em;
+  margin-bottom: 0.7em;
+  color: #8ab4f8;
+}
+
+.terms-container h2 {
+  font-size: 1.2em;
+  margin-top: 1.3em;
+  margin-bottom: 0.5em;
+  color: #8ab4f8;
+}
+
+.terms-container ul {
+  margin-left: 1.2em;
+  margin-bottom: 1em;
+}
+
+.terms-container a {
+  color: #8ab4f8;
+  text-decoration: underline;
+}
