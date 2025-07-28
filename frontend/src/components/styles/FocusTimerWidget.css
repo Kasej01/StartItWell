@@ -140,3 +140,85 @@
 .focus-timer-modal-actions button:hover {
   background: #43a047;
 }
+
+@media (max-width: 600px) {
+  .focus-timer-widget {
+    min-width: 0;
+    max-width: 98vw;
+    padding: 0.7rem 0.3rem;
+    font-size: 0.95em;
+    border-radius: 0.7rem;
+  }
+
+  .focus-timer-widget .widget-title {
+    font-size: 1em;
+    margin-bottom: 0.7rem;
+  }
+
+  .timer-main {
+    gap: 0.4rem;
+  }
+
+  .timer-session {
+    font-size: 0.95rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .timer-countdown {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 1px;
+  }
+
+  .timer-controls {
+    gap: 0.4rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .timer-controls button {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.92rem;
+    border-radius: 0.5rem;
+  }
+
+  .timer-pomodoro-count {
+    font-size: 0.92rem;
+    margin-top: 0.1rem;
+  }
+
+  .focus-timer-modal {
+    min-width: 95vw;
+    padding: 1rem 0.5rem;
+    border-radius: 0.7rem;
+    font-size: 0.95em;
+    gap: 0.7rem;
+  }
+
+  .focus-timer-modal h5 {
+    font-size: 1em;
+    margin-bottom: 0.7rem;
+  }
+
+  .focus-timer-modal label {
+    font-size: 0.95em;
+    margin-bottom: 0.3rem;
+  }
+
+  .focus-timer-modal input[type="number"],
+  .focus-timer-modal select {
+    font-size: 0.95em;
+    padding: 0.2rem;
+    border-radius: 0.3rem;
+  }
+
+  .focus-timer-modal-actions {
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+  }
+
+  .focus-timer-modal-actions button {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.95em;
+    border-radius: 0.5rem;
+  }
+}

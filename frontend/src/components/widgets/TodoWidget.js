@@ -186,21 +186,7 @@ const TodoWidget = ({ widget, token }) => {
   return (
     <div className="todo-widget">
       <div className="todo-header">
-        {editingTitle ? (
-          <input
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            onBlur={() => saveTitle(title)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                e.target.blur();
-              }
-            }}
-            autoFocus
-          />
-        ) : (
-          <h4 onClick={() => setEditingTitle(true)} title="Click to edit">{title}</h4>
-        )}
+        <h4>To-Do List</h4>
       </div>
       {/* Column headers */}
       <div className="todo-list-header">
@@ -210,7 +196,7 @@ const TodoWidget = ({ widget, token }) => {
         <span className="todo-col-priority">Priority</span>
         <span className="todo-col-actions"></span>
       </div>
-      <div className="todo-list-container"> {/* Add this container div */}
+      <div className="todo-list-container">
         <ul className="todo-list">
           {items.map(item => (
             <li

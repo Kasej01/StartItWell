@@ -11,10 +11,27 @@ import NotesWidget from './widgets/NotesWidget';
 
 const getGridSettings = () => {
   const width = window.innerWidth;
-  if (width >= 1600) return { cols: 15, width: 1600 };
+  if (width >= 1600) return { cols: 14, width: 1600 };
   if (width >= 1200) return { cols: 8, width: 1200 };
   if (width >= 900) return { cols: 6, width: 900 };
-  return { cols: 2, width: Math.max(width - 32, 320) };
+  if (width >= 600) return { cols: 4, width: width - 32 };
+  return { cols: 4, width: Math.max(width - 16, 320) }; // For very small screens
+};
+
+const getWidgetDefaultSize = (type) => {
+  const width = window.innerWidth;
+  if (type === 'todo') return width < 600 ? { size_x: 2, size_y: 3 } : { size_x: 3, size_y: 4 };
+  if (type === 'calendar') return width < 600 ? { size_x: 4, size_y: 4 } : { size_x: 8, size_y: 4 };
+  if (type === 'focustimer') return width < 600 ? { size_x: 2, size_y: 2 } : { size_x: 3, size_y: 2 };
+  if (type === 'notes') return width < 600 ? { size_x: 2, size_y: 1 } : { size_x: 2, size_y: 1 };
+  return { size_x: 3, size_y: 1 };
+};
+
+const DEFAULT_TITLES = {
+  todo: 'To-Do List',
+  notes: '',
+  focustimer: 'Timer',
+  calendar: 'Calendar'
 };
 
 const Dashboard = ({ user, token }) => {
@@ -24,18 +41,17 @@ const Dashboard = ({ user, token }) => {
   const [newWidget, setNewWidget] = useState({ title: '', type: '' });
   const [gridSettings, setGridSettings] = useState(getGridSettings());
 
-  const WIDGET_TYPE_DEFAULT_SIZES = {
-    todo: { size_x: 3, size_y: 4 },
-    calendar: { size_x: 8, size_y: 4 },
-    focustimer: { size_x: 3, size_y: 2 },
-    notes: { size_x: 2, size_y: 1 }
-  };
-  const defaultSize = WIDGET_TYPE_DEFAULT_SIZES[newWidget.type] || { size_x: 3, size_y: 1 };
-
-
-  // Responsive grid settings
+  // Responsive grid and widget sizes
   useEffect(() => {
-    const handleResize = () => setGridSettings(getGridSettings());
+    const handleResize = () => {
+      setGridSettings(getGridSettings());
+      setWidgets(widgets =>
+        widgets.map(w => ({
+          ...w,
+          ...getWidgetDefaultSize(w.type)
+        }))
+      );
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -100,24 +116,26 @@ const Dashboard = ({ user, token }) => {
   // Add widget handler
   const handleAddWidget = async e => {
     e.preventDefault();
-    const res = await fetch( `${process.env.REACT_APP_API_URL}/api/widgets`, {
+    const size = getWidgetDefaultSize(newWidget.type);
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widgets`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
-        ...newWidget,
+        type: newWidget.type,
+        title: DEFAULT_TITLES[newWidget.type],
         pos_x: 0,
         pos_y: 0,
-        ...defaultSize
+        ...size
       })
     });
     const data = await res.json();
     if (data && data.id) {
       setWidgets([...widgets, data]);
       setShowAdd(false);
-      setNewWidget({ title: '', type: '' });
+      setNewWidget({ type: '' });
     }
   };
 
@@ -142,27 +160,17 @@ const Dashboard = ({ user, token }) => {
           <form className="add-widget-form" onSubmit={handleAddWidget}>
             <h3>Add Widget</h3>
             <label>
-              Title:
-              <input
-                type="text"
-                value={newWidget.title}
-                onChange={e => setNewWidget({ ...newWidget, title: e.target.value })}
-                required
-              />
-            </label>
-            <label>
               Type:
               <select
                 value={newWidget.type}
-                onChange={e => setNewWidget({ ...newWidget, type: e.target.value })}
+                onChange={e => setNewWidget({ type: e.target.value })}
                 required
               >
                 <option value="" disabled>Select a widget type</option>
-                <option value="todo">To-Do</option>
+                <option value="todo">To-Do List</option>
                 <option value="notes">Notes</option>
                 <option value="focustimer">Timer</option>
                 <option value="calendar">Calendar</option>
-                
               </select>
             </label>
             <div className="add-widget-actions">

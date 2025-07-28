@@ -158,7 +158,16 @@
 }
 
 @media (max-width: 900px) {
-  .dashboard-grid-area { min-height: 40vh; }
+  .dashboard-grid-area {
+    min-height: 40vh;
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .dashboard-widget {
+    min-width: 140px;
+    min-height: 80px;
+    padding: 0.7em 0.5em;
+    font-size: 0.98em;
+  }
 }
 
 @media (max-width: 800px) {
@@ -185,7 +194,16 @@
 @media (max-width: 600px) {
   .dashboard-grid-area {
     min-height: 30vh;
+    grid-template-columns: repeat(2, 1fr) !important;
     padding: 0 0.2em;
+  }
+  .dashboard-widget {
+    min-width: 90px;
+    min-height: 60px;
+    max-width: 98vw;
+    padding: 0.5em 0.2em;
+    font-size: 0.95em;
+    border-radius: 0.7em;
   }
   .dashboard-container {
     width: 90vw;

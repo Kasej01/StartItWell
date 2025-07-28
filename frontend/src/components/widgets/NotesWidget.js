@@ -42,7 +42,6 @@ const NotesWidget = ({ widget, token }) => {
 
   return (
     <div className="sticky-note">
-      <div className="widget-title">{widget.title || 'Note'}</div>
       {editing ? (
         <textarea
           value={text}

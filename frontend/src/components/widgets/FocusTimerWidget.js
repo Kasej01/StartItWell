@@ -28,7 +28,6 @@ function playBeep() {
       ctx.close();
     }, 300);
   } catch (e) {
-    // ignore errors
   }
 }
 
@@ -53,11 +52,9 @@ const FocusTimerWidget = ({ widget, token }) => {
           setRemainingSeconds(latest.workDuration ?? DEFAULTS.workDuration);
         }
       } catch (err) {
-        // fallback to defaults
       }
     };
     fetchData();
-    // eslint-disable-next-line
   }, [widget.id, token]);
 
   // Timer logic (does NOT send to backend)
@@ -132,9 +129,8 @@ const FocusTimerWidget = ({ widget, token }) => {
 
   return (
     <div className="focus-timer-widget">
-      <div className="widget-title">{widget.title || 'Focus Timer'}</div>
+      <div className="widget-title">Timer</div>
       <div className="timer-main">
-        <div className="timer-session work">Work</div>
         <div className="timer-countdown">{formatTime(remainingSeconds)}</div>
         <div className="timer-controls">
           {!running ? (

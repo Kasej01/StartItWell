@@ -149,7 +149,7 @@ const CalendarWidget = ({ widget, token }) => {
   return (
     <div className="calendar-widget">
       <div className="calendar-header">
-        <h4>{widget.title || 'My Calendar'}</h4>
+        <h4>Calendar</h4>
         <button onClick={() => setShowAdd(true)}>+ Add Event</button>
         <button onClick={() => setView(view === Views.WEEK ? Views.DAY : Views.WEEK)}>
           {view === Views.WEEK ? 'Daily View' : 'Weekly View'}

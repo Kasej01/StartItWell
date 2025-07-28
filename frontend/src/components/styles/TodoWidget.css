@@ -2,66 +2,97 @@
 @media (max-width: 600px) {
   .todo-widget {
     min-width: 0;
-    padding: 0.5em 0.2em;
+    padding: 0.3em 0.1em;
+    font-size: 0.92em;
   }
   .todo-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5em;
+    gap: 0.3em;
+    margin-bottom: 0.3em;
+  }
+  .todo-header h4 {
+    font-size: 1em;
+    margin-bottom: 0.2em;
+  }
+  .todo-header input {
+    font-size: 1em;
+    padding: 0.15em 0.3em;
   }
   .todo-list-header {
-    font-size: 0.98em;
-    padding: 0.3em 0;
-  }
-  .todo-list-item {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.2em;
-    padding: 0.4em 0.1em;
-  }
-  .todo-item-name {
-    font-size: 0.98em;
-    flex: 2;
-    min-width: 0;
-    margin-bottom: 0;
-    justify-content: center;
-    text-align: center;
-  }
-  .todo-item-due {
-    color: #3953e7;
-    font-size: 0.98em;
-    flex: 1;
-    min-width: 70px;
-    max-width: 90px;
-    margin-bottom: 0;
-    text-align: left;
-  }
-  .todo-item-priority {
-    flex: 1;
-    min-width: 0;
-    margin-bottom: 0;
+    font-size: 0.92em;
+    padding: 0.2em 0;
+    margin-bottom: 0.2em;
   }
   .todo-list-header span {
-    font-size: 0.98em;
-    padding-right: 0.2em;
+    font-size: 0.92em;
+    padding-right: 0.1em;
+  }
+  .todo-list-item {
+    gap: 0.1em;
+    padding: 0.2em 0.05em;
+    font-size: 0.92em;
+  }
+  .todo-item-name {
+    font-size: 0.92em;
+    margin-bottom: 0;
+    padding: 0.1em 0;
+  }
+  .todo-item-due {
+    font-size: 0.92em;
+    min-width: 50px;
+    max-width: 70px;
+    margin-bottom: 0;
+    padding: 0.1em 0;
+  }
+  .todo-item-priority {
+    font-size: 0.92em;
+    min-width: 0;
+    margin-bottom: 0;
+    padding: 0.1em 0;
   }
   .todo-delete-btn {
-    width: 1.5em;
-    font-size: 1em;
+    width: 1.2em;
+    font-size: 0.85em;
     margin-left: 0;
     margin-top: 0;
+    padding: 0.1em 0.2em;
   }
   .priority-ball {
-    width: 14px;
-    height: 14px;
-    margin: 0 2px;
+    width: 10px;
+    height: 10px;
+    margin: 0 1px;
+  }
+  .priority-ball-tooltip {
+    font-size: 0.85em;
+    left: 110%;
   }
   .todo-modal {
-    min-width: 90vw;
-    padding: 1.2rem 0.5rem;
+    min-width: 95vw;
+    padding: 0.8rem 0.3rem;
+    font-size: 0.92em;
   }
   .todo-modal label {
-    font-size: 0.98em;
+    font-size: 0.92em;
+  }
+  .todo-modal h5 {
+    font-size: 1em;
+    margin-bottom: 0.5em;
+  }
+  .todo-modal input,
+  .todo-modal select {
+    font-size: 0.92em;
+    padding: 0.3em 0.5em;
+  }
+  .todo-modal-actions button {
+    font-size: 0.92em;
+    padding: 0.3em 0.7em;
+  }
+  .todo-list-add-row {
+    padding: 0.3em 0 0.1em 0;
+  }
+  .todo-list {
+    padding-right: 2px;
   }
 }
 
