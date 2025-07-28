@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/DailyRoutineWidget.css';
 
 // Example templates
@@ -13,23 +13,17 @@ const ROUTINE_TEMPLATES = [
   }
 ];
 
-function showConfetti() {
-  // Simple confetti using canvas-confetti (if installed)
+// Confetti from bottom center using canvas-confetti (must be loaded in public/index.html or via npm)
+function shootConfetti() {
   if (window.confetti) {
-    window.confetti();
-  } else {
-    // fallback: flash screen
-    const el = document.createElement('div');
-    el.style.position = 'fixed';
-    el.style.top = 0;
-    el.style.left = 0;
-    el.style.width = '100vw';
-    el.style.height = '100vh';
-    el.style.background = 'rgba(255,255,255,0.7)';
-    el.style.zIndex = 9999;
-    el.innerHTML = '<div style="font-size:3em;text-align:center;margin-top:40vh;">🎉</div>';
-    document.body.appendChild(el);
-    setTimeout(() => document.body.removeChild(el), 1200);
+    window.confetti({
+      particleCount: 120,
+      spread: 90,
+      origin: { x: 0.5, y: 1 },
+      startVelocity: 35,
+      angle: 90,
+      colors: ['#8ab4f8', '#43a047', '#ffd600', '#e53935', '#fff']
+    });
   }
 }
 
@@ -37,41 +31,79 @@ const DailyRoutineWidget = ({ widget, token }) => {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
   const [showTemplate, setShowTemplate] = useState(false);
+  const hasCompleted = useRef(false); // Track if confetti has already been shown
 
-  // Load from backend or widget data
+  // Load items from backend on mount
   useEffect(() => {
-    if (widget.items) setItems(widget.items);
-    else setShowTemplate(true);
-  }, [widget.items]);
+    const fetchRoutine = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data/${widget.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && Array.isArray(data[data.length - 1].data?.items)) {
+          setItems(data[data.length - 1].data.items);
+          setShowTemplate(false);
+        } else {
+          setShowTemplate(true);
+        }
+      } catch {
+        setShowTemplate(true);
+      }
+    };
+    fetchRoutine();
+  }, [widget.id, token]);
+
+  // Save items to backend (POST to /api/widget-data)
+  const saveRoutine = async (updatedItems) => {
+    setItems(updatedItems);
+    try {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          widget_id: widget.id,
+          data: { items: updatedItems }
+        })
+      });
+    } catch {}
+  };
 
   // Progress calculation
   const completed = items.filter(i => i.done).length;
   const progress = items.length ? Math.round((completed / items.length) * 100) : 0;
 
-  // Fireworks/confetti when completed
-  useEffect(() => {
-    if (items.length > 0 && completed === items.length) showConfetti();
-  }, [completed, items.length]);
+  // Only shoot confetti when the last item is checked (not on reload)
+  const toggleItem = idx => {
+    const updatedItems = items.map((item, i) => i === idx ? { ...item, done: !item.done } : item);
+    const wasComplete = items.every(i => i.done);
+    const willBeComplete = updatedItems.every(i => i.done);
+
+    // Only shoot confetti if this action completes the list (was not complete before, now is)
+    if (!wasComplete && willBeComplete) {
+      shootConfetti();
+    }
+
+    saveRoutine(updatedItems);
+  };
 
   // Add item
   const handleAddItem = e => {
     e.preventDefault();
     if (newItem.trim()) {
-      setItems([...items, { text: newItem.trim(), done: false }]);
+      const updatedItems = [...items, { text: newItem.trim(), done: false }];
+      saveRoutine(updatedItems);
       setNewItem('');
     }
   };
 
-  // Toggle item
-  const toggleItem = idx => {
-    setItems(items =>
-      items.map((item, i) => i === idx ? { ...item, done: !item.done } : item)
-    );
-  };
-
   // Template selection
-  const handleTemplateSelect = template => {
-    setItems(template.items.map(text => ({ text, done: false })));
+  const handleTemplateSelect = async (template) => {
+    const templateItems = template.items.map(text => ({ text, done: false }));
+    await saveRoutine(templateItems);
     setShowTemplate(false);
   };
 
@@ -84,7 +116,7 @@ const DailyRoutineWidget = ({ widget, token }) => {
           {ROUTINE_TEMPLATES.map(t => (
             <button key={t.name} onClick={() => handleTemplateSelect(t)}>{t.name}</button>
           ))}
-          <button onClick={() => setShowTemplate(false)}>Start Blank</button>
+          <button onClick={() => handleTemplateSelect({ items: [] })}>Start Blank</button>
         </div>
       ) : (
         <>
