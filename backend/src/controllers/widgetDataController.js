@@ -5,7 +5,7 @@ exports.addWidgetData = async (req, res) => {
   const { widget_id, data } = req.body;
 
   try {
-    // First verify the widget belongs to this user
+    // Verify widget belongs to user
     const { data: widget, error: widgetError } = await supabase
       .from('user_widgets')
       .select('id')
@@ -17,15 +17,38 @@ exports.addWidgetData = async (req, res) => {
       return res.status(404).json({ error: 'Widget not found or access denied' });
     }
 
-    // Now insert the widget data
-    const { data: inserted, error } = await supabase
+    // Check if widget_data already exists for this widget
+    const { data: existing, error: existingError } = await supabase
       .from('widget_data')
-      .insert([{ widget_id, data }])
-      .select('*')
+      .select('id')
+      .eq('widget_id', widget_id)
       .single();
 
-    if (error) throw error;
-    res.status(201).json(inserted);
+    if (existingError && existingError.code !== 'PGRST116') throw existingError;
+
+    let result;
+    if (existing) {
+      // Update existing data
+      const { data: updated, error: updateError } = await supabase
+        .from('widget_data')
+        .update({ data })
+        .eq('id', existing.id)
+        .select('*')
+        .single();
+      if (updateError) throw updateError;
+      result = updated;
+    } else {
+      // Insert new data
+      const { data: inserted, error: insertError } = await supabase
+        .from('widget_data')
+        .insert([{ widget_id, data }])
+        .select('*')
+        .single();
+      if (insertError) throw insertError;
+      result = inserted;
+    }
+
+    res.status(201).json(result);
   } catch (err) {
     console.error('Add widget data error:', err);
     res.status(500).json({ error: 'Server error' });

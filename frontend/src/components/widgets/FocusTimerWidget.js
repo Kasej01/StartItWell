@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import '../styles/FocusTimerWidget.css';
 
 const DEFAULTS = {
@@ -38,7 +39,7 @@ const FocusTimerWidget = ({ widget, token }) => {
   const [showSettings, setShowSettings] = useState(false);
   const intervalRef = useRef();
 
-  // Fetch timer data from backend
+  // Fetch timer data from backend ONCE on load
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,16 +50,17 @@ const FocusTimerWidget = ({ widget, token }) => {
         if (Array.isArray(data) && data.length > 0) {
           const latest = data[data.length - 1].data;
           setSettings(s => ({ ...s, ...latest }));
-          setRemainingSeconds(latest.remainingSeconds ?? DEFAULTS.workDuration);
+          setRemainingSeconds(latest.workDuration ?? DEFAULTS.workDuration);
         }
       } catch (err) {
         // fallback to defaults
       }
     };
     fetchData();
+    // eslint-disable-next-line
   }, [widget.id, token]);
 
-  // Timer logic
+  // Timer logic (does NOT send to backend)
   useEffect(() => {
     if (!running) return;
     intervalRef.current = setInterval(() => {
@@ -74,24 +76,21 @@ const FocusTimerWidget = ({ widget, token }) => {
     return () => clearInterval(intervalRef.current);
   }, [running]);
 
-  // Save timer state to backend
-  useEffect(() => {
+  // Save settings to backend ONLY when preferences change
+  const saveSettingsToBackend = async (newSettings) => {
     if (!widget.id || !token) return;
-    const save = async () => {
-      await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          widget_id: widget.id,
-          data: { ...settings, remainingSeconds }
-        })
-      });
-    };
-    save();
-  }, [remainingSeconds, settings]);
+    await fetch(`${process.env.REACT_APP_API_URL}/api/widget-data`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        widget_id: widget.id,
+        data: newSettings
+      })
+    });
+  };
 
   // Handle timer end
   const handleTimerEnd = () => {
@@ -123,9 +122,10 @@ const FocusTimerWidget = ({ widget, token }) => {
   };
 
   // Settings modal
-  const handleSettingsSave = (e) => {
+  const handleSettingsSave = async (e) => {
     e.preventDefault();
     setShowSettings(false);
+    await saveSettingsToBackend(settings);
     // If not running, update timer immediately
     if (!running) setRemainingSeconds(settings.workDuration);
   };
@@ -146,46 +146,52 @@ const FocusTimerWidget = ({ widget, token }) => {
           <button onClick={() => setShowSettings(true)}>⚙️</button>
         </div>
       </div>
-      {showSettings && (
-        <div className="focus-timer-modal-bg" onClick={() => setShowSettings(false)}>
-          <form className="focus-timer-modal" onSubmit={handleSettingsSave} onClick={e => e.stopPropagation()}>
-            <h5>Timer Settings</h5>
-            <label>
-              Work Duration (minutes):
-              <input
-                type="number"
-                min={1}
-                max={120}
-                value={settings.workDuration / 60}
-                onChange={e => setSettings(s => ({ ...s, workDuration: Number(e.target.value) * 60 }))}
-                required
-              />
-            </label>
-            <label>
-              Sound cue:
-              <input
-                type="checkbox"
-                checked={settings.soundEnabled}
-                onChange={e => setSettings(s => ({ ...s, soundEnabled: e.target.checked }))}
-              />
-            </label>
-            <label>
-              Visual cue:
-              <select
-                value={settings.visualCue}
-                onChange={e => setSettings(s => ({ ...s, visualCue: e.target.value }))}
-              >
-                <option value="flash">Flash</option>
-                <option value="none">None</option>
-              </select>
-            </label>
-            <div className="focus-timer-modal-actions">
-              <button type="submit">Save</button>
-              <button type="button" onClick={() => setShowSettings(false)}>Cancel</button>
-            </div>
-          </form>
-        </div>
-      )}
+      {showSettings &&
+        ReactDOM.createPortal(
+          <div className="focus-timer-modal-bg" onClick={() => setShowSettings(false)}>
+            <form className="focus-timer-modal" onSubmit={handleSettingsSave} onClick={e => e.stopPropagation()}>
+              <h5>Timer Settings</h5>
+              <label>
+                Work Duration (minutes):
+                <input
+                  type="number"
+                  min={1}
+                  max={120}
+                  value={settings.workDuration / 60}
+                  onChange={e => {
+                    const newDuration = Number(e.target.value) * 60;
+                    setSettings(s => ({ ...s, workDuration: newDuration }));
+                    if (!running) setRemainingSeconds(newDuration);
+                  }}
+                  required
+                />
+              </label>
+              <label>
+                Sound cue:
+                <input
+                  type="checkbox"
+                  checked={settings.soundEnabled}
+                  onChange={e => setSettings(s => ({ ...s, soundEnabled: e.target.checked }))}
+                />
+              </label>
+              <label>
+                Visual cue:
+                <select
+                  value={settings.visualCue}
+                  onChange={e => setSettings(s => ({ ...s, visualCue: e.target.value }))}
+                >
+                  <option value="flash">Flash</option>
+                  <option value="none">None</option>
+                </select>
+              </label>
+              <div className="focus-timer-modal-actions">
+                <button type="submit">Save</button>
+                <button type="button" onClick={() => setShowSettings(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>,
+          document.getElementById('modal-root')
+        )}
     </div>
   );
 };

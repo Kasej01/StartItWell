@@ -1,0 +1,44 @@
+.sticky-note {
+  background: #fffecb;
+  border: 1px solid #e3c96c;
+  border-radius: 0.7rem;
+  box-shadow: 2px 2px 8px rgba(180,160,60,0.10);
+  padding: 0.7rem;
+  min-width: 120px;
+  max-width: 180px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  word-break: break-word;
+}
+
+.widget-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #b59b2a;
+  margin-bottom: 0.5rem;
+}
+
+.note-text {
+  font-size: 1rem;
+  color: #b59b2a;
+  white-space: pre-wrap;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.note-placeholder {
+  color: #e3c96c;
+  font-style: italic;
+}
+
+textarea {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #e3c96c;
+  font-size: 1rem;
+  background: #fffde2;
+  resize: none;
+  padding: 0.4rem;
+}

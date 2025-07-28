@@ -112,6 +112,7 @@
   border: 2px solid transparent;
   transition: border 0.18s;
   box-sizing: border-box;
+  z-index: auto; /* Remove or set to auto */
 }
 
 .layout.editing .dashboard-widget { border: 2px dashed #322c8f; }

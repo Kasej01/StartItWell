@@ -25,18 +25,18 @@ exports.editWidget = async (req, res) => {
   const widget_id = req.params.id;
   const { type, title, pos_x, pos_y, size_x, size_y } = req.body;
   try {
-    // Only update if the widget belongs to the user
     const { data, error } = await supabase
       .from('user_widgets')
       .update({ type, title, pos_x, pos_y, size_x, size_y })
       .eq('id', widget_id)
       .eq('user_id', user_id)
-      .select('*')
-      .single();
+      .select('*');
 
     if (error) throw error;
-    if (!data) return res.status(404).json({ error: 'Widget not found' });
-    res.json(data);
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'Widget not found' });
+    }
+    res.json(data[0]);
   } catch (err) {
     console.error('Edit widget error:', err);
     res.status(500).json({ error: 'Server error' });
