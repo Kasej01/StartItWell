@@ -50,7 +50,6 @@ const Navbar = () => {
             {dropdownOpen && (
               <div className="user-dropdown-menu">
                 <button onClick={() => { setDropdownOpen(false); navigate('/account'); }}>Account Details</button>
-                <button onClick={() => { setDropdownOpen(false); navigate('/settings'); }}>Settings</button>
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}
